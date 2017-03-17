@@ -17,6 +17,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
+import org.datasyslab.geospark.enums.IndexType;
 import org.datasyslab.geospark.joinJudgement.GeometryByPolygonJudgement;
 import org.datasyslab.geospark.joinJudgement.GeometryByPolygonJudgementUsingIndex;
 import org.datasyslab.geospark.joinJudgement.GeometryByRectangleJudgement;
@@ -52,6 +53,9 @@ public class JoinQuery implements Serializable {
     List<Object> rectangleList = rawSpatialRDD.collect();
 
     List<Tuple2<Envelope, HashSet<Point>>> collection2 = new ArrayList<>();
+
+    objectRDD.buildIndex(IndexType.RTREE, false);
+
     for (Object rectangle : rectangleList) {
       JavaRDD<Point> queryResult = RangeQuery.SpatialRangeQuery(objectRDD, (Envelope) rectangle, 0, true);
       List<Point> pointList = queryResult.collect();
